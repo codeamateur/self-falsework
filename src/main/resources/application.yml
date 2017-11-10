@@ -1,4 +1,20 @@
 spring:
   profiles:
-    active: dev    
+    active: dev
+  aop:
+    proxy-target-class: true
+  mail:
+    host: smtp.qq.com
+    username: 1072411603@qq.com
+    password: tiyinwhilbhpbddf
+    properties.mail.smtp.timeout: 2500
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+  thymeleaf:
+    cache: false
+management:
+  security:
+    enabled: false
+
      
