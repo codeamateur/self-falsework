@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tianqian.self.dao.user.sysUserDao">
-  <resultMap id="BaseResultMap" type="com.tianqian.self.model.entity.user.sysUser">
+<mapper namespace="com.tianqian.self.dao.user.SysUserDao">
+  <resultMap id="BaseResultMap" type="com.tianqian.self.model.entity.user.SysUser">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="dep_id" jdbcType="BIGINT" property="depId" />
     <result column="login_name" jdbcType="VARCHAR" property="loginName" />
@@ -34,7 +34,7 @@
     delete from sys_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.tianqian.self.model.entity.user.sysUser">
+  <insert id="insert" parameterType="com.tianqian.self.model.entity.user.SysUser">
     insert into sys_user (id, dep_id, login_name, 
       name, password, sex, email, 
       phone, mobile, address, 
@@ -48,7 +48,7 @@
       #{status,jdbcType=BIT}, #{registerTime,jdbcType=TIMESTAMP}, #{lastLoginIp,jdbcType=VARCHAR}, 
       #{lastLoginTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.tianqian.self.model.entity.user.sysUser">
+  <insert id="insertSelective" parameterType="com.tianqian.self.model.entity.user.SysUser">
     insert into sys_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -157,7 +157,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.tianqian.self.model.entity.user.sysUser">
+  <update id="updateByPrimaryKeySelective" parameterType="com.tianqian.self.model.entity.user.SysUser">
     update sys_user
     <set>
       <if test="depId != null">
@@ -211,7 +211,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.tianqian.self.model.entity.user.sysUser">
+  <update id="updateByPrimaryKey" parameterType="com.tianqian.self.model.entity.user.SysUser">
     update sys_user
     set dep_id = #{depId,jdbcType=BIGINT},
       login_name = #{loginName,jdbcType=VARCHAR},
@@ -231,4 +231,17 @@
       last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="getPageByCriteria" parameterType="com.tianqian.self.model.dto.user.SysUserQueryDto" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    <where>
+      <if test="loginName != null">
+        login_name LIKE CONCAT('%',#{loginName,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
 </mapper>

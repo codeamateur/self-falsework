@@ -1,8 +1,10 @@
 package com.tianqian.self.service.user.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.tianqian.self.dao.user.sysUserDao;
-import com.tianqian.self.model.entity.user.sysUser;
+import com.tianqian.self.dao.user.SysUserDao;
+import com.tianqian.self.model.dto.user.SysUserQueryDto;
+import com.tianqian.self.model.entity.user.SysUser;
 import com.tianqian.self.service.user.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,30 +16,38 @@ import java.util.List;
 public class SysUserServiceImpl implements SysUserService{
 
     @Autowired
-    private sysUserDao sysUserDao;
+    private SysUserDao sysUserDao;
 
     @Override
-    public int addUser(sysUser user) {
+    public int addUser(SysUser user) {
         return sysUserDao.insertSelective(user);
     }
 
     @Override
-    public int modifyUser(sysUser user) {
+    public int modifyUser(SysUser user) {
         return sysUserDao.updateByPrimaryKey(user);
     }
 
     @Override
-    public sysUser selectByPrimaryKey(Long id) {
+    public SysUser selectByPrimaryKey(Long id) {
         return sysUserDao.selectByPrimaryKey(id);
     }
 
     @Override
-    public List<sysUser> getList() {
+    public List<SysUser> getList() {
         return null;
     }
 
     @Override
-    public PageInfo<sysUser> getPageByCriteria() {
-        return null;
+    public PageInfo<SysUser> getPageByCriteria(SysUserQueryDto dto) {
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        return new PageInfo<SysUser>(sysUserDao.getPageByCriteria(dto));
     }
+
+    @Override
+    public int deleteUser(Long id) {
+        return sysUserDao.deleteByPrimaryKey(id);
+    }
+
+
 }

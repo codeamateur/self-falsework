@@ -2,7 +2,7 @@ package com.tianqian.self.model.entity.user;
 
 import java.util.Date;
 
-public class sysUser {
+public class SysUser {
     private Long id;
 
     private Long depId;

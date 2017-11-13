@@ -15,20 +15,20 @@
 		<javaTypeResolver>
 			<property name="forceBigDecimals" value="false" />
 		</javaTypeResolver>
-		<javaModelGenerator targetPackage="com.tianqian.self.model.entity.user"
+		<javaModelGenerator targetPackage="com.tianqian.self.model.entity.role"
 			targetProject="src\main\java">
 			<property name="enableSubPackages" value="true" />
 		</javaModelGenerator>
-		<sqlMapGenerator targetPackage="mapping\user"
+		<sqlMapGenerator targetPackage="mapping\role"
 			targetProject="src\main\resources">
 			<property name="enableSubPackages" value="true" />
 		</sqlMapGenerator>
 		<javaClientGenerator type="XMLMAPPER"
-			targetPackage="com.tianqian.self.dao.user" targetProject="src\main\java">
+			targetPackage="com.tianqian.self.dao.role" targetProject="src\main\java">
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>
-		<table schema="dispatch" tableName="sys_user" mapperName="sysUserDao"
-			domainObjectName="sysUser" enableCountByExample="false"
+		<table schema="dispatch" tableName="sys_role" mapperName="SysRoleDao"
+			domainObjectName="SysRole" enableCountByExample="false"
 			enableUpdateByExample="false" enableDeleteByExample="false"
 			enableSelectByExample="false" selectByExampleQueryId="true">
 			<property name="useActualColumnNames" value="false" />

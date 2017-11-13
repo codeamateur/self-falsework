@@ -95,14 +95,14 @@
   </logger>   
     
     <!-- 日志输出级别 -->
-<!--    <root level="DEBUG">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="DEBUG_FILE" />
         <appender-ref ref="INFO_FILE" />
         <appender-ref ref="WARN_FILE" />
         <appender-ref ref="ERROR_FILE" />
-    </root>-->
-    <springProfile name="dev,test">
+    </root>
+<!--    <springProfile name="dev,test">
         <logger name="org.springframework.web" level="INFO">
             <appender-ref ref="STDOUT" />
             <appender-ref ref="INFO_FILE" />
@@ -124,5 +124,5 @@
         <logger name="com.tianqian.self" level="ERROR">
             <appender-ref ref="ERROR_FILE" />
         </logger>
-    </springProfile>
+    </springProfile>-->
 </configuration>

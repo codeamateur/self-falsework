@@ -1,4 +1,4 @@
-package com.tianqian.self.common;
+package com.tianqian.self.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

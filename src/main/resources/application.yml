@@ -1,8 +1,13 @@
 spring:
+  tomcat:
+    uri-encoding: utf-8
+ # 配置环境
   profiles:
     active: dev
+  # 支持基于类切面
   aop:
     proxy-target-class: true
+  # 配置邮件
   mail:
     host: smtp.qq.com
     username: 1072411603@qq.com
@@ -13,8 +18,64 @@ spring:
     properties.mail.smtp.starttls.required: true
   thymeleaf:
     cache: false
+  http:
+    multipart:
+      enabled: true
+      file-size-threshold: 4KB
+      location: /tmp
+      max-file-size: 5Mb
+      max-request-size: 50Mb
+  # 配置数据库连接池
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,log4j,config
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      filter:
+        stat:
+          merge-sql: true
+          slow-sql-millis: 5000
+      # Druid监控配置
+      web-stat-filter:
+        enabled: true
+        exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
+  redis:
+        database: 0
+        timeout: 100000
+        pool:
+              max-active: 8 #最大连接数
+              max-idle: 8 #最大空闲连接数
+              max-wait: -1 #最大等待时间
+              min-idle: 0 #初始化连接数
 management:
   security:
     enabled: false
+# 配置
+mybatis:
+  mapper-locations: classpath:mapping/*/*.xml
+  type-aliases-package: com.tianqian.self.model.entitymybatis
+# 配置分页
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
 
      
