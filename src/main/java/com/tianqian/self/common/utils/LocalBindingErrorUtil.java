@@ -1,5 +1,7 @@
-package com.tianqian.self.common;
+package com.tianqian.self.common.utils;
 
+import com.tianqian.self.common.base.BaseCodeEnum;
+import com.tianqian.self.common.base.BaseResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -7,7 +9,7 @@ import org.springframework.validation.FieldError;
 
 public class LocalBindingErrorUtil {
 	
-	public static <T> BaseResult<T> handle(BindingResult binding,Class<T> clazz){
+	public static <T> BaseResult<T> handle(BindingResult binding, Class<T> clazz){
 		String message = "数据有误";
 		for (Object obj : binding.getAllErrors()) {
 			if (obj instanceof FieldError) {
@@ -16,6 +18,6 @@ public class LocalBindingErrorUtil {
 				break;
 			}
 		}
-		return new BaseResult<T>(false,BaseCodeEnum.FAILURE.getIndex(),message);
+		return new BaseResult<T>(false, BaseCodeEnum.FAILURE.getIndex(),message);
 	}
 }

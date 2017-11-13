@@ -1,4 +1,4 @@
-package com.tianqian.self.common;
+package com.tianqian.self.common.base;
 
 public class BusinessException extends RuntimeException {
 

@@ -1,8 +1,8 @@
 package com.tianqian.self.config.exception;
 
-import com.tianqian.self.common.BaseCodeEnum;
-import com.tianqian.self.common.BaseResult;
-import com.tianqian.self.common.BusinessException;
+import com.tianqian.self.common.base.BaseCodeEnum;
+import com.tianqian.self.common.base.BaseResult;
+import com.tianqian.self.common.base.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;

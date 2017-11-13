@@ -1,4 +1,4 @@
-package com.tianqian.self.common;
+package com.tianqian.self.common.base;
 
 public enum BaseCodeEnum {
 	SUCCESS(10000,"成功"),

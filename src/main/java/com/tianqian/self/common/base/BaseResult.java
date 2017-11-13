@@ -1,6 +1,6 @@
 
 
-package com.tianqian.self.common;
+package com.tianqian.self.common.base;
 
 import java.io.Serializable;
 import java.util.List;

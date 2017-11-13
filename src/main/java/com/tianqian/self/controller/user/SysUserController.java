@@ -1,8 +1,8 @@
 package com.tianqian.self.controller.user;
 
-import com.tianqian.self.common.BaseCodeEnum;
-import com.tianqian.self.common.BaseResult;
-import com.tianqian.self.common.LocalBindingErrorUtil;
+import com.tianqian.self.common.base.BaseCodeEnum;
+import com.tianqian.self.common.base.BaseResult;
+import com.tianqian.self.common.utils.LocalBindingErrorUtil;
 import com.tianqian.self.model.dto.user.SysUserQueryDto;
 import com.tianqian.self.model.entity.user.SysUser;
 import com.tianqian.self.service.user.SysUserService;
