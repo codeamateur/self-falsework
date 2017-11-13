@@ -60,10 +60,10 @@ spring:
         database: 0
         timeout: 100000
         pool:
-              max-active: 8 #最大连接数
-              max-idle: 8 #最大空闲连接数
-              max-wait: -1 #最大等待时间
-              min-idle: 0 #初始化连接数
+          max-active: 8 #最大连接数
+          max-idle: 8 #最大空闲连接数
+          max-wait: -1 #最大等待时间
+          min-idle: 0 #初始化连接数
 management:
   security:
     enabled: false
@@ -76,6 +76,25 @@ pagehelper:
   helper-dialect: mysql
   reasonable: true
   support-methods-arguments: true
+shiro:
+  web:
+    enabled: true
+  loginUrl:
+  unauthorizedUrl:
+  successUrl:
+  sessionManager:
+    sessionIdCookieEnabled: true
+    sessionIdUrlRewritingEnabled: true
+    deleteInvalidSessions: true
+    cookie:
+      name: sid
+    rememberMeManager:
+      cookie:
+        name: rememberMe
+        # 默认一年
+        maxAge: 60 * 60 * 24 * 365
+
+
 
 
      

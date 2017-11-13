@@ -1,4 +1,4 @@
-package com.tianqian.self.config;
+package com.tianqian.self.config.swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

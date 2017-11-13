@@ -1,4 +1,4 @@
-package com.tianqian.self.config;
+package com.tianqian.self.config.redis;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.serializer.support.DeserializingConverter;

@@ -1,4 +1,4 @@
-package com.tianqian.self.config;
+package com.tianqian.self.config.logAop;
 
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;

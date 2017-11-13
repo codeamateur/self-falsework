@@ -1,15 +1,14 @@
-package com.tianqian.self.config;
+package com.tianqian.self.config.exception;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.tianqian.self.common.BaseCodeEnum;
+import com.tianqian.self.common.BaseResult;
+import com.tianqian.self.common.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.tianqian.self.common.BaseCodeEnum;
-import com.tianqian.self.common.BaseResult;
-import com.tianqian.self.common.BusinessException;
+import javax.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
