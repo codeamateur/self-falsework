@@ -1,8 +1,10 @@
 package com.tianqian.self.model.entity.user;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class SysUser {
+public class SysUser implements Serializable{
+
     private Long id;
 
     private Long depId;

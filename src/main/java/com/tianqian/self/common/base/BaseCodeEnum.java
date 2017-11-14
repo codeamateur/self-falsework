@@ -9,7 +9,7 @@ public enum BaseCodeEnum {
 	
 	private String message;
 	
-	private BaseCodeEnum(int index, String message) {
+	BaseCodeEnum(int index, String message) {
 		this.index = index;
 		this.message = message;
 	}

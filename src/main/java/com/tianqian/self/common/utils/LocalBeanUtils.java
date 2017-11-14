@@ -5,8 +5,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class LocalBeanUtils {
 
@@ -40,47 +41,5 @@ public class LocalBeanUtils {
         	targetList.add(target);
         }
     	return targetList;
-    }
-    
-    /**
-     * list<map> 转javaBean的list
-     * @param list 源List
-     * @param clazz javaBean类
-     * @return
-     */
-    public static <T> List<T> transListMapToBean(List<Map<String,Object>> list, Class<T> clazz){
-    	List<T> tlist = new ArrayList<>();
-    	try {
-	    	for (Map<String,Object> map : list) {
-	    		
-	    		T t = clazz.newInstance();
-	    		org.apache.commons.beanutils.BeanUtils.populate(t, map);
-	    		tlist.add(t);
-			}
-    	} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-    	return tlist;
-    }
-    
-    /**
-     * map转javaBean
-     * @param map
-     * @param t
-     * @return
-     */
-    public static <T> T transMapToBean(Map<String,Object> map, T t){
-    	try {
-	    		org.apache.commons.beanutils.BeanUtils.populate(t, map);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-    	return t;
     }
 }

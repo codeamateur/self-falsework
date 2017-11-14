@@ -76,25 +76,24 @@ pagehelper:
   helper-dialect: mysql
   reasonable: true
   support-methods-arguments: true
-shiro:
-  web:
-    enabled: true
-  loginUrl:
-  unauthorizedUrl:
-  successUrl:
-  sessionManager:
-    sessionIdCookieEnabled: true
-    sessionIdUrlRewritingEnabled: true
-    deleteInvalidSessions: true
-    cookie:
-      name: sid
-    rememberMeManager:
-      cookie:
-        name: rememberMe
-        # 默认一年
-        maxAge: 60 * 60 * 24 * 365
+#shiro:
+#  web:
+#    enabled: true
+#  loginUrl:
+#  unauthorizedUrl:
+#  successUrl:
+#  sessionManager:
+#    sessionIdCookieEnabled: true
+#    sessionIdUrlRewritingEnabled: true
+#    deleteInvalidSessions: true
+#    cookie:
+#      name: sid
+#    rememberMeManager:
+#      cookie:
+#        name: rememberMe
+#        # 默认一年
+#        maxAge: 60 * 60 * 24 * 365
 
 
 
 
-     

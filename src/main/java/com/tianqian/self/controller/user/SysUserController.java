@@ -3,6 +3,8 @@ package com.tianqian.self.controller.user;
 import com.tianqian.self.common.base.BaseCodeEnum;
 import com.tianqian.self.common.base.BaseResult;
 import com.tianqian.self.common.utils.LocalBindingErrorUtil;
+import com.tianqian.self.model.dto.user.SysUserDto;
+import com.tianqian.self.model.dto.user.SysUserMapper;
 import com.tianqian.self.model.dto.user.SysUserQueryDto;
 import com.tianqian.self.model.entity.user.SysUser;
 import com.tianqian.self.service.user.SysUserService;
@@ -58,6 +60,9 @@ public class SysUserController {
     @ApiImplicitParam(name = "userId", value = "用户主键", required = true, dataType = "int",paramType = "path")
     @GetMapping("/get/{userId}")
     public BaseResult<SysUser> selectByPrimaryKey(@Valid @PathVariable("userId") Integer userId){
+        SysUser sysUser = sysUserService.selectByPrimaryKey(userId.longValue());
+        SysUserDto userDto =  SysUserMapper.INSTANCE.entityToDto(sysUser);
+        System.out.println(String.format("localAddress:%s;test:%s",userDto.getLocalAddress(),userDto.getTest()));
         return new BaseResult<SysUser>(sysUserService.selectByPrimaryKey(userId.longValue()));
     }
 
