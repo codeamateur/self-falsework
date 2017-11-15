@@ -4,7 +4,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SpringUtil implements ApplicationContextAware,DisposableBean {
 
     public static  ApplicationContext applicationContext = null;
