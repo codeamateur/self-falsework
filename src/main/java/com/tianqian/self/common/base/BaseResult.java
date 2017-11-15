@@ -2,12 +2,11 @@
 
 package com.tianqian.self.common.base;
 
+import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.github.pagehelper.PageInfo;
-
-import io.swagger.annotations.ApiModelProperty;
 
 public class BaseResult<T> implements Serializable{
 	

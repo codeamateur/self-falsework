@@ -90,4 +90,12 @@
       status = #{status,jdbcType=BIT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  <select id="selectRolesByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    role.*
+    from sys_role role
+    JOIN sys_user_role urole
+    ON role.id = urole.role_id
+    where urole.user_id = #{userId,jdbcType=BIGINT}
+  </select>
 </mapper>

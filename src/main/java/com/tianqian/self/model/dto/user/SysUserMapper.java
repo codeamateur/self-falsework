@@ -1,6 +1,7 @@
 package com.tianqian.self.model.dto.user;
 
 import com.tianqian.self.model.entity.user.SysUser;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -17,4 +18,6 @@ public interface SysUserMapper {
      })
     SysUserDto entityToDto(SysUser user);
 
+    @InheritInverseConfiguration
+    SysUser fromDto(SysUserDto dto);
 }

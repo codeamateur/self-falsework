@@ -244,4 +244,11 @@
       </if>
     </where>
   </select>
+  <select id="selectOneByLoginName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    where login_name = #{loginName,jdbcType=VARCHAR}
+    limit 1
+  </select>
 </mapper>

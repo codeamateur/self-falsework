@@ -27,8 +27,8 @@
 			targetPackage="com.tianqian.self.dao.role" targetProject="src\main\java">
 			<property name="enableSubPackages" value="true" />
 		</javaClientGenerator>
-		<table schema="dispatch" tableName="sys_role" mapperName="SysRoleDao"
-			domainObjectName="SysRole" enableCountByExample="false"
+		<table schema="dispatch" tableName="sys_role_permission" mapperName="SysRolePermissionDao"
+			domainObjectName="SysRolePermission" enableCountByExample="false"
 			enableUpdateByExample="false" enableDeleteByExample="false"
 			enableSelectByExample="false" selectByExampleQueryId="true">
 			<property name="useActualColumnNames" value="false" />

@@ -20,4 +20,6 @@ public interface SysUserDao {
 
     List<SysUser> getPageByCriteria(SysUserQueryDto dto);
 
+    SysUser selectOneByLoginName(String loginName);
+
 }

@@ -2,6 +2,8 @@ package com.tianqian.self.dao.role;
 
 import com.tianqian.self.model.entity.role.SysRole;
 
+import java.util.List;
+
 public interface SysRoleDao {
     int deleteByPrimaryKey(Long id);
 
@@ -14,4 +16,6 @@ public interface SysRoleDao {
     int updateByPrimaryKeySelective(SysRole record);
 
     int updateByPrimaryKey(SysRole record);
+
+    List<SysRole> selectRolesByUserId(Long userId);
 }
