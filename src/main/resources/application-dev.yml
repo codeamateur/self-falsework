@@ -2,8 +2,9 @@ server:
   port: 9080
 spring:
   redis:
-    host: 192.168.1.233
-    password: 123456
+    host: localhost
+#    host: 192.168.1.233
+#    password: 123456
     port: 6379
     timeout: 100000
   datasource:

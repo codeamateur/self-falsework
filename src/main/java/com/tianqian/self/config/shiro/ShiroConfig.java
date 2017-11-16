@@ -1,11 +1,15 @@
 package com.tianqian.self.config.shiro;
 
 import com.google.common.collect.Maps;
+import com.tianqian.self.config.filter.LoginFilter;
+import com.tianqian.self.config.redis.ShiroRedisCacheManager;
+import com.tianqian.self.config.redis.ShiroRedisSessionDao;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.filter.authc.AnonymousFilter;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
@@ -26,8 +30,10 @@ public class ShiroConfig {
 
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
+        DelegatingFilterProxy filterProxy = new DelegatingFilterProxy("shiroFilter");
+        filterProxy.setTargetFilterLifecycle(true);
         FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
-        filterRegistration.setFilter(new DelegatingFilterProxy("shiroFilter"));
+        filterRegistration.setFilter(filterProxy);
         filterRegistration.setEnabled(true);
         filterRegistration.addUrlPatterns("/*");
         filterRegistration.setDispatcherTypes(DispatcherType.REQUEST);
@@ -42,11 +48,12 @@ public class ShiroConfig {
         shiroFilter.setSuccessUrl("/");
         shiroFilter.setUnauthorizedUrl("");
 
-        Map<String, Filter> filters = Maps.newHashMap();
-        filters.put("customAuthc", loginFilter());
+        Map<String, Filter> filters = Maps.newLinkedHashMap();
+        filters.put("anon", new AnonymousFilter());
+        filters.put("customAuthc", new LoginFilter());
         shiroFilter.setFilters(filters);
 
-        Map<String, String> filterChainDefinitionMap = Maps.newHashMap();
+        Map<String, String> filterChainDefinitionMap = Maps.newLinkedHashMap();
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/webjars/**","anon");
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
@@ -115,7 +122,7 @@ public class ShiroConfig {
     @Bean("sessionDao")
     public ShiroRedisSessionDao sessionDao(){
         ShiroRedisSessionDao sessionDao = new ShiroRedisSessionDao();
-        sessionDao.setSessionKeyPrefix("web-session-");
+        sessionDao.setSessionKeyPrefix("web_session:");
         sessionDao.setSessionIdGenerator(sessionIdGenerator());
         return sessionDao;
     }
@@ -123,7 +130,7 @@ public class ShiroConfig {
     @Bean("cacheManager")
     public ShiroRedisCacheManager cacheManager(){
         ShiroRedisCacheManager cacheManager = new ShiroRedisCacheManager();
-        cacheManager.setCacheKeyPrefix("web-cache-");
+        cacheManager.setCacheKeyPrefix("web_cache:");
         return cacheManager;
     }
 
@@ -184,10 +191,10 @@ public class ShiroConfig {
         return advisor;
     }
 
-    @Bean
-    public LoginFilter loginFilter(){
-        LoginFilter loginFilter = new LoginFilter();
-        return loginFilter;
-    }
+//    @Bean
+//    public LoginFilter loginFilter(){
+//        LoginFilter loginFilter = new LoginFilter();
+//        return loginFilter;
+//    }
 
 }

@@ -14,6 +14,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +26,12 @@ import java.util.List;
 @Component
 public class AccountRealm extends AuthorizingRealm {
 	
-	@Autowired
-	SysUserDao sysUserDao;
-	@Autowired
-	SysRoleDao sysRoleDao;
-	@Autowired
-	SysPermissionDao sysPermissionDao;
+	@Resource
+	private SysUserDao sysUserDao;
+	@Resource
+	private SysRoleDao sysRoleDao;
+	@Resource
+	private SysPermissionDao sysPermissionDao;
 	
 	/**
 	 * 认证回调函数,登录时调用
@@ -38,9 +39,8 @@ public class AccountRealm extends AuthorizingRealm {
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
 		UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
-		SysUser user = null;
 		//获取用户信息实体
-		user = sysUserDao.selectOneByLoginName(token.getUsername());
+		SysUser user = sysUserDao.selectOneByLoginName(token.getUsername());
      	if (user == null){
      		throw new UnknownAccountException();
      	} 

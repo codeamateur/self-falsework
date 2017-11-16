@@ -2,7 +2,7 @@
  * May 5, 2017 4:25:52 PM 
  * Copyright(c) 2015-2017 深圳xxx电子商务科技有限公司. 
  */
-package com.tianqian.self.config.shiro;
+package com.tianqian.self.config.redis;
 
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
@@ -14,9 +14,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import javax.annotation.Resource;
 import java.util.Set;
 
-/**
- * @author 张永强
- */
 public class ShiroRedisCacheManager implements CacheManager, Destroyable {
 
     /**
@@ -38,7 +35,7 @@ public class ShiroRedisCacheManager implements CacheManager, Destroyable {
 
     @Override
     public <K, V> Cache<K, V> getCache(String name) throws CacheException {
-        return new ShiroRedisCache<K, V>(this.cacheKeyPrefix + name + ":");
+        return new ShiroRedisCache<K, V>(this.cacheKeyPrefix + name);
     }
 
     /**

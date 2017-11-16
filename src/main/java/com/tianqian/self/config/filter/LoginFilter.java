@@ -1,4 +1,4 @@
-package com.tianqian.self.config.shiro;
+package com.tianqian.self.config.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.tianqian.self.common.base.BaseCodeEnum;

@@ -2,12 +2,14 @@
  * May 5, 2017 2:20:53 PM 
  * Copyright(c) 2015-2017 深圳xxx电子商务科技有限公司. 
  */
-package com.tianqian.self.config.shiro;
+package com.tianqian.self.config.redis;
 
-import org.apache.log4j.Logger;
+
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
@@ -17,9 +19,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author 张永强
- */
 public class ShiroRedisSessionDao extends AbstractSessionDAO {
 
     /**
@@ -30,10 +29,7 @@ public class ShiroRedisSessionDao extends AbstractSessionDAO {
     @Resource
     private RedisTemplate<String, Session> redisTemplate;
 
-    /**
-     * log4j
-     */
-    private static final Logger logger = Logger.getLogger(ShiroRedisSessionDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(ShiroRedisSessionDao.class);
 
     @Override
     public void update(Session session) throws UnknownSessionException {
