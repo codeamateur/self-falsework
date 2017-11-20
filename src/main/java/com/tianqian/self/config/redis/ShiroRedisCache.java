@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class ShiroRedisCache<K, V> implements Cache<K, V> {
 
@@ -22,7 +23,12 @@ public class ShiroRedisCache<K, V> implements Cache<K, V> {
     /**
      * 拼接上authorizationCache包名后的redis cache key的前缀
      */
-    private final String cacheKeyPrefix;
+    private String cacheKeyPrefix;
+
+    /**
+     * doGetAuthorizationInfo 的过期时间,默认30分钟。
+     */
+    private long expire = 1800000L;
 
     /**
      * 同一包中的类可以访问
@@ -50,7 +56,7 @@ public class ShiroRedisCache<K, V> implements Cache<K, V> {
         }
 
         V previos = get(key);
-        redisTemplate.opsForValue().set(this.cacheKeyPrefix + key, value);
+        redisTemplate.opsForValue().set(this.cacheKeyPrefix + key, value, this.expire, TimeUnit.MILLISECONDS);
         return previos;
     }
 

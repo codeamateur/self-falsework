@@ -87,6 +87,8 @@ public class ShiroConfig {
     public AccountRealm accountRealm(){
         AccountRealm accountRealm = new AccountRealm();
         accountRealm.setAuthenticationCachingEnabled(true);
+        accountRealm.setCachingEnabled(true);
+        accountRealm.setAuthenticationCacheName("");
         accountRealm.setCacheManager(cacheManager());
         return accountRealm;
     }
@@ -190,11 +192,4 @@ public class ShiroConfig {
         advisor.setSecurityManager(securityManager());
         return advisor;
     }
-
-//    @Bean
-//    public LoginFilter loginFilter(){
-//        LoginFilter loginFilter = new LoginFilter();
-//        return loginFilter;
-//    }
-
 }
