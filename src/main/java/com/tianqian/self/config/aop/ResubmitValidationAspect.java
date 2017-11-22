@@ -3,7 +3,6 @@ package com.tianqian.self.config.aop;
 import com.alibaba.fastjson.JSON;
 import com.tianqian.self.common.base.BaseCodeEnum;
 import com.tianqian.self.common.base.BusinessException;
-import com.tianqian.self.config.kafka.OperateLog;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,6 +22,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @Aspect
@@ -36,7 +36,7 @@ public class ResubmitValidationAspect {
     private static final Logger logger = LoggerFactory.getLogger(ResubmitValidationAspect.class);
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     private ThreadLocal<Boolean> booleanThreadLocal = new ThreadLocal<>();
 
@@ -49,7 +49,7 @@ public class ResubmitValidationAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         Object target = joinPoint.getTarget();
-        String params = JSON.toJSONString(args);
+        String params = JSON.toJSONString(Arrays.toString(args));
         if(logger.isDebugEnabled()) {
             logger.debug("before methodName: {}", method.getName());
             logger.debug("before args: {}", params);
@@ -77,7 +77,7 @@ public class ResubmitValidationAspect {
     @After("resubmitValidation()")
     public void doAfter(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
-        String params = JSON.toJSONString(args);
+        String params = JSON.toJSONString(Arrays.toString(args));
         if(booleanThreadLocal.get()) {
             // 清除redis中key为入参的数据
             redisTemplate.delete(params);
