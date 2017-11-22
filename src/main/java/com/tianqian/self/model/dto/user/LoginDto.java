@@ -1,9 +1,13 @@
 package com.tianqian.self.model.dto.user;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class LoginDto {
+import java.io.Serializable;
+
+@Data
+public class LoginDto implements Serializable{
 
     @ApiModelProperty(value="登录ID",required=true)
     @NotEmpty(message="notEmpty")
@@ -13,19 +17,5 @@ public class LoginDto {
     @NotEmpty(message="notEmpty")
     private String password;
 
-    public String getLoginId() {
-        return loginId;
-    }
 
-    public void setLoginId(String loginId) {
-        this.loginId = loginId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

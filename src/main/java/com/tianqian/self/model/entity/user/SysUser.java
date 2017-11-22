@@ -176,4 +176,6 @@ public class SysUser implements Serializable{
     public void setLastLoginTime(Date lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
+
+
 }

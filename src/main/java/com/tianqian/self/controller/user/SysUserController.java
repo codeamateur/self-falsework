@@ -69,7 +69,7 @@ public class SysUserController {
     @ApiOperation(value = "根据主键删除用户信息")
     @ApiImplicitParam(name = "userId", value = "用户主键", required = true, dataType = "int",paramType = "path")
     @GetMapping("/del/{userId}")
-    public BaseResult<String> ByPrimaryKey(@Valid @PathVariable("userId") Integer userId){
+    public BaseResult<String> del(@Valid @PathVariable("userId") Integer userId){
         if (sysUserService.deleteUser(userId.longValue()) ==1){
             return new BaseResult<String>();
         }else {
@@ -92,6 +92,8 @@ public class SysUserController {
         }
         return new BaseResult<SysUser>(sysUserService.getPageByCriteria(dto));
     }
+
+
 
 
 

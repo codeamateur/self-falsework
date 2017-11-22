@@ -64,8 +64,15 @@ spring:
           max-idle: 8 #最大空闲连接数
           max-wait: -1 #最大等待时间
           min-idle: 0 #初始化连接数
-  session:
-    store-type: redis
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: selfGroup
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 management:
   security:
     enabled: false
