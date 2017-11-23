@@ -4,7 +4,8 @@ public enum BaseCodeEnum {
 	SUCCESS(10000,"成功"),
 	FAILURE(10001,"失败"),
 	ERROR(10002,"系统异常"),
-	RESUBMIT(10003,"重复提交");
+	RESUBMIT(10003,"重复提交"),
+	UNAUTHORIZED(10004,"未登录");
 	
 	private int index;
 	

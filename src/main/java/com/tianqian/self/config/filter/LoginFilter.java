@@ -40,7 +40,7 @@ public class LoginFilter extends FormAuthenticationFilter {
 			res.setContentType("application/json; charset=utf-8");
 			res.setStatus(HttpServletResponse.SC_OK);
 			res.setHeader("sessionstatus", "timeout");
-			res.getWriter().write(JSON.toJSONString(new BaseResult<String>(false, BaseCodeEnum.FAILURE.getIndex(), "timeout")));
+			res.getWriter().write(JSON.toJSONString(new BaseResult<String>(false, BaseCodeEnum.UNAUTHORIZED.getIndex(), BaseCodeEnum.UNAUTHORIZED.getMessage())));
 			return false;
 		}
 	}
