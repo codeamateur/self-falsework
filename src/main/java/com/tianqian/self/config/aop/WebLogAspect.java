@@ -10,12 +10,13 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Date;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 @Aspect
 @Component
@@ -48,7 +49,7 @@ public class WebLogAspect {
         log.setHttpType(request.getMethod());
         log.setIp(getIpAddr(request));
         log.setMethodName(joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-        log.setReqArgs(JSON.toJSONString(Arrays.toString(joinPoint.getArgs())));
+        log.setReqArgs(getRequestArgs(joinPoint));
         logThreadLocal.set(log);
     }
 
@@ -62,10 +63,11 @@ public class WebLogAspect {
         handleLog(joinPoint, null,e);
     }
 
-
     /**
-     * @Description: 方法调用后触发   记录结束时间
+     * 日志记录
      * @param joinPoint
+     * @param retValue
+     * @param e
      */
     public  void handleLog(JoinPoint joinPoint,Object retValue,Exception e) {
         OperateLog log = logThreadLocal.get();
@@ -88,10 +90,9 @@ public class WebLogAspect {
     }
 
     /**
-     * @Description: 获取ip
-     * @author keke
-     * @param  request
-     * @return ip
+     * 获取ip
+     * @param request
+     * @return
      */
     public static String getIpAddr(HttpServletRequest request) {
         String ip = request.getHeader("x-forwarded-for");
@@ -105,6 +106,26 @@ public class WebLogAspect {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }
+
+    /**
+     * 接口参数，排除掉HttpServletRequest、HttpServletResponse、BindingResult
+     * @param joinPoint
+     * @return
+     */
+    public String getRequestArgs(JoinPoint joinPoint){
+        Object[] args = joinPoint.getArgs();
+        if(args != null && args.length>0){
+            List<Object> lists = new ArrayList<Object>(Arrays.asList(args));
+            for(Iterator<Object> iterator = lists.iterator(); iterator.hasNext();){
+                Object obj = iterator.next();
+                if(obj instanceof HttpServletRequest || obj instanceof HttpServletResponse || obj instanceof BindingResult){
+                    iterator.remove();
+                }
+            }
+            return JSON.toJSONString(lists);
+        }
+        return "";
     }
 }
 
