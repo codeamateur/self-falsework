@@ -3,7 +3,10 @@ package com.tianqian.self.controller.user;
 
 import com.tianqian.self.common.base.BaseCodeEnum;
 import com.tianqian.self.common.base.BaseResult;
+import com.tianqian.self.common.base.BusinessException;
 import com.tianqian.self.common.utils.SecurityUtil;
+import com.tianqian.self.config.distributedlock.RedisDistributedLockHelper;
+import com.tianqian.self.config.properties.MessageSourceHelper;
 import com.tianqian.self.model.dto.user.LoginDto;
 import com.tianqian.self.model.entity.user.SysUser;
 import io.swagger.annotations.Api;
@@ -16,6 +19,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +35,9 @@ public class AccountController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
+	@Autowired
+	private RedisDistributedLockHelper distributedLockHelper;
+
 	@ApiIgnore
 	@GetMapping(value = "/login")
 	public BaseResult<String> login(HttpServletRequest req, HttpServletResponse response) {
@@ -41,35 +48,44 @@ public class AccountController {
 	@ApiOperation(value = "登录", notes = "")
 	@ApiImplicitParam(name = "dto", value = "登录信息", required = true, dataType = "LoginDto")
 	@PostMapping(value = "/login")
-	public BaseResult<SysUser> login(@RequestBody LoginDto dto, HttpServletRequest req) {
-		BaseResult<SysUser> result = new BaseResult<SysUser>();
-		String error = null;
-		try {
-			UsernamePasswordToken token = new UsernamePasswordToken();
-			token.setUsername(dto.getLoginId());
-			token.setPassword(SecurityUtil.MD5AndSHA256(dto.getPassword()).toCharArray());
-			SecurityUtils.getSubject().login(token);
-		} catch (UnknownAccountException uae) {
-			logger.error("weblogin UnknownAccount: " + uae.toString());
-			error = "用户名/密码错误";
-		} catch (IncorrectCredentialsException ice) {
-			logger.error("weblogin IncorrectCredentials: " + ice.toString());
-			error = "用户名/密码错误";
-		} catch (LockedAccountException lke) {
-			logger.error("weblogin account locked: " + lke.toString());
-			error = "账户被锁定";
-		} catch (Exception e) {
-			logger.error("weblogin error: ", e);
-			error = "其他错误：" + e;
-		}
-		if (error == null) {
-			SysUser user = (SysUser) SecurityUtils.getSubject().getPrincipal();
-			result.setObj(user);
+	public BaseResult<SysUser> login(@RequestBody LoginDto dto, HttpServletRequest req){
+		String key = "login_" + dto.getLoginId();
+		if (distributedLockHelper.tryLock(key)) {
+			try {
+				BaseResult<SysUser> result = new BaseResult<SysUser>();
+				String error = null;
+				try {
+					UsernamePasswordToken token = new UsernamePasswordToken();
+					token.setUsername(dto.getLoginId());
+					token.setPassword(SecurityUtil.MD5AndSHA256(dto.getPassword()).toCharArray());
+					SecurityUtils.getSubject().login(token);
+				} catch (UnknownAccountException uae) {
+					logger.error("weblogin UnknownAccount: " + uae.toString());
+					error = "用户名/密码错误";
+				} catch (IncorrectCredentialsException ice) {
+					logger.error("weblogin IncorrectCredentials: " + ice.toString());
+					error = "用户名/密码错误";
+				} catch (LockedAccountException lke) {
+					logger.error("weblogin account locked: " + lke.toString());
+					error = "账户被锁定";
+				} catch (Exception e) {
+					logger.error("weblogin error: ", e);
+					error = "其他错误：" + e;
+				}
+				if (error == null) {
+					SysUser user = (SysUser) SecurityUtils.getSubject().getPrincipal();
+					result.setObj(user);
+				} else {
+					result.setSuccess(false);
+					result.setMsg(error);
+				}
+				return result;
+			} finally {
+				distributedLockHelper.unLock(key);
+			}
 		} else {
-			result.setSuccess(false);
-			result.setMsg(error);
+			throw new BusinessException(MessageSourceHelper.getMessage("系统繁忙"));
 		}
-		return result;
 	}
 
 	/**

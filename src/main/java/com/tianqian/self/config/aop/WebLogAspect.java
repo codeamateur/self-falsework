@@ -16,6 +16,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 
 @Aspect
@@ -77,7 +80,10 @@ public class WebLogAspect {
             }
         //获取响应参数
         if (e != null) {
-            log.setExceptionMsg(e.getMessage());
+            Writer wr = new StringWriter();
+            PrintWriter pWriter = new PrintWriter(wr);
+            e.printStackTrace(pWriter);
+            log.setExceptionMsg(wr.toString());
         }
         if(retValue!=null){
             log.setResArgs(JSON.toJSONString(retValue));
