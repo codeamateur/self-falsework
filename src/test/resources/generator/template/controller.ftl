@@ -1,14 +1,18 @@
-package ${basePackage}.controller;
+package ${basePackage}.controller.${subPackage};
 import ${basePackage}.common.base.BaseResult;
-import ${basePackage}.model.${modelNameUpperCamel};
-import ${basePackage}.service.${modelNameUpperCamel}Service;
+import ${basePackage}.model.${subPackage}.${modelNameUpperCamel};
+import ${basePackage}.service.${subPackage}.${modelNameUpperCamel}Service;
+import ${basePackage}.common.utils.LocalBindingErrorUtil;
+import ${basePackage}.common.base.BasePage;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -16,36 +20,81 @@ import java.util.List;
 */
 @RestController
 @RequestMapping("${baseRequestMapping}")
+@Api(tags = "")
 public class ${modelNameUpperCamel}Controller {
+
     @Autowired
     private ${modelNameUpperCamel}Service ${modelNameLowerCamel}Service;
 
+    /**
+     * 新增
+     * @param ${modelNameLowerCamel}
+     * @param bindingResult
+     * @return
+     */
     @PostMapping("/add")
-    public BaseResult<String> add(${modelNameUpperCamel} ${modelNameLowerCamel}) {
+    @ApiOperation(value = "新增")
+    @ApiImplicitParam(name = "${modelNameLowerCamel}", value = "新增信息", required = true, dataType = "${modelNameUpperCamel}")
+    public BaseResult<String> add(@Valid @RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+          return LocalBindingErrorUtil.handle(bindingResult,String.class);
+        }
         ${modelNameLowerCamel}Service.save(${modelNameLowerCamel});
          return new BaseResult<String>();
     }
 
-    @PostMapping("/delete")
-    public BaseResult<String> delete(@RequestParam Integer id) {
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "删除")
+    @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "int",paramType = "path")
+    public BaseResult<String> delete(@PathVariable Integer id) {
         ${modelNameLowerCamel}Service.deleteById(id);
         return new BaseResult<String>();
     }
 
-    @PostMapping("/update")
-    public BaseResult<String> update(${modelNameUpperCamel} ${modelNameLowerCamel}) {
+    /**
+     * 更新
+     * @param ${modelNameLowerCamel}
+     * @param bindingResult
+     * @return
+     */
+    @PutMapping("/update")
+    @ApiOperation(value = "更新")
+    @ApiImplicitParam(name = "${modelNameLowerCamel}", value = "更新信息", required = true, dataType = "${modelNameUpperCamel}")
+    public BaseResult<String> update(@Valid @RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+          return LocalBindingErrorUtil.handle(bindingResult,String.class);
+        }
         ${modelNameLowerCamel}Service.update(${modelNameLowerCamel});
          return new BaseResult<String>();
     }
 
-    @PostMapping("/detail")
-    public BaseResult<${modelNameUpperCamel}> detail(@RequestParam Integer id) {
+    /**
+     * 详情
+     * @param id
+     * @return
+     */
+    @GetMapping("/detail/{id}")
+    @ApiOperation(value = "详情")
+    @ApiImplicitParam(name = "id", value = "主键", required = true, dataType = "int",paramType = "path")
+    public BaseResult<${modelNameUpperCamel}> detail(@PathVariable Integer id) {
         return new BaseResult<${modelNameUpperCamel}>(${modelNameLowerCamel}Service.findById(id));
     }
 
-    @PostMapping("/list")
-    public BaseResult<${modelNameUpperCamel}> list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
-        PageHelper.startPage(page, size);
+    /**
+     * 分页
+     * @param page
+     * @return
+     */
+    @PostMapping("/page")
+    @ApiOperation(value = "分页")
+    @ApiImplicitParam(name = "page", value = "分页信息", required = true, dataType = "BasePage")
+    public BaseResult<${modelNameUpperCamel}> page(@RequestBody BasePage page) {
+        PageHelper.startPage(page.getPageNum(), page.getPageSize());
         List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
         PageInfo<${modelNameUpperCamel}> pageInfo = new PageInfo<>(list);
         return new BaseResult<${modelNameUpperCamel}>(pageInfo);

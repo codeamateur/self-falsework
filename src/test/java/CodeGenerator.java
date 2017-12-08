@@ -17,12 +17,19 @@ import java.util.*;
  */
 public class CodeGenerator {
     private static final String BASE_PACKAGE = "com.tianqian.self";//项目基础包名称，根据自己公司的项目修改
+    private static final String SUB_PACKAGE = "dept";//字定义子包路径
 
-    private static final String MODEL_PACKAGE = BASE_PACKAGE + ".model";//Model所在包
-    private static final String MAPPER_PACKAGE = BASE_PACKAGE + ".dao";//Mapper所在包
-    private static final String SERVICE_PACKAGE = BASE_PACKAGE + ".service";//Service所在包
+    private static final String BASE_MODEL_PACKAGE = BASE_PACKAGE + ".model";//Model所在包
+    private static final String BASE_MAPPER_PACKAGE = BASE_PACKAGE + ".dao";//Mapper所在包
+    private static final String BASE_SERVICE_PACKAGE = BASE_PACKAGE + ".service";//Service所在包
+    private static final String BASE_CONTROLLER_PACKAGE = BASE_PACKAGE + ".controller";//Controller所在包
+
+    private static final String MODEL_PACKAGE = BASE_MODEL_PACKAGE + "." + SUB_PACKAGE;//Model所在包
+    private static final String MAPPER_PACKAGE = BASE_MAPPER_PACKAGE + "." + SUB_PACKAGE;//Mapper所在包
+    private static final String SERVICE_PACKAGE = BASE_SERVICE_PACKAGE + "." + SUB_PACKAGE;//Service所在包
     private static final String SERVICE_IMPL_PACKAGE = SERVICE_PACKAGE + ".impl";//ServiceImpl所在包
-    private static final String CONTROLLER_PACKAGE = BASE_PACKAGE + ".controller";//Controller所在包
+    private static final String CONTROLLER_PACKAGE = BASE_CONTROLLER_PACKAGE + "." + SUB_PACKAGE;//Controller所在包
+
 
     //JDBC配置，请修改为你项目的实际配置
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/sz_mid";
@@ -73,9 +80,9 @@ public class CodeGenerator {
 
 
     public static void genModelAndMapper(String tableName, String modelName) {
-        Context context = new Context(ModelType.FLAT);
-        context.setId("mybatisUtil");
-        context.setTargetRuntime("MyBatis3Simple");
+        Context context = new Context(ModelType.CONDITIONAL);
+        context.setId("mysqlTables");
+        context.setTargetRuntime("MyBatis3");
         context.addProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING, "UTF-8");
         // jdbc
         JDBCConnectionConfiguration jdbcConnectionConfiguration = new JDBCConnectionConfiguration();
@@ -92,7 +99,7 @@ public class CodeGenerator {
         // Mapper configuration
         SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
         sqlMapGeneratorConfiguration.setTargetProject(PROJECT_PATH + RESOURCES_PATH);
-        sqlMapGeneratorConfiguration.setTargetPackage("mapper");
+        sqlMapGeneratorConfiguration.setTargetPackage("mapping"+"."+SUB_PACKAGE);
         context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
         // DAO
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
@@ -114,11 +121,13 @@ public class CodeGenerator {
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
         tableConfiguration.setDomainObjectName(modelName);
+        tableConfiguration.setMapperName(StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName)+"Dao" : modelName+"Dao");
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
         tableConfiguration.setCountByExampleStatementEnabled(false);
         tableConfiguration.setDeleteByExampleStatementEnabled(false);
         tableConfiguration.setSelectByExampleStatementEnabled(false);
         tableConfiguration.setUpdateByExampleStatementEnabled(false);
+        tableConfiguration.addProperty("useActualColumnNames", "true");
         context.addTableConfiguration(tableConfiguration);
 
         List<String> warnings;
@@ -157,6 +166,7 @@ public class CodeGenerator {
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
             data.put("basePackage", BASE_PACKAGE);
+            data.put("subPackage", SUB_PACKAGE);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_SERVICE + modelNameUpperCamel + "Service.java");
             if (!file.getParentFile().exists()) {
@@ -190,6 +200,7 @@ public class CodeGenerator {
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));
             data.put("basePackage", BASE_PACKAGE);
+            data.put("subPackage", SUB_PACKAGE);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_CONTROLLER + modelNameUpperCamel + "Controller.java");
             if (!file.getParentFile().exists()) {

@@ -41,7 +41,7 @@ public class ${modelNameUpperCamel}Controller {
     }
 
     @GetMapping
-    public BaseResult<${modelNameUpperCamel}> list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
+    public BaseResult<${modelNameUpperCamel}> list() {
         PageHelper.startPage(page, size);
         List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
         PageInfo<${modelNameUpperCamel}> pageInfo = new PageInfo<>(list);
