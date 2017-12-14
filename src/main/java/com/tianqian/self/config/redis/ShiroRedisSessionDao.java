@@ -1,18 +1,16 @@
-/**
- * May 5, 2017 2:20:53 PM 
- * Copyright(c) 2015-2017 深圳xxx电子商务科技有限公司. 
- */
+
 package com.tianqian.self.config.redis;
 
 
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
+import org.redisson.api.RMapCache;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 
 public class ShiroRedisSessionDao extends AbstractSessionDAO {
 
+    @Autowired
+    private RedissonClient redisson;
+
     /**
      * redis session key 前缀
      */
     private String sessionKeyPrefix;
-
-    @Resource
-    private RedisTemplate<String, Session> redisTemplate;
 
     private static final Logger logger = LoggerFactory.getLogger(ShiroRedisSessionDao.class);
 
@@ -35,24 +33,29 @@ public class ShiroRedisSessionDao extends AbstractSessionDAO {
     public void update(Session session) throws UnknownSessionException {
         if (session == null || session.getId() == null) {
             logger.info("session or sessionId is null");
+            return ;
         }
-        redisTemplate.opsForValue().set(this.sessionKeyPrefix + session.getId(), session, session.getTimeout(), TimeUnit.MILLISECONDS);
+        RMapCache<Serializable, Session> sessionCache = redisson.getMapCache(sessionKeyPrefix);
+        sessionCache.put(session.getId(),session, session.getTimeout(), TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void delete(Session session) {
         if (session == null || session.getId() == null) {
             logger.info("session or sessionId is null");
+            return ;
         }
-        redisTemplate.delete(this.sessionKeyPrefix + session.getId());
+        RMapCache<Serializable, Session> sessionCache = redisson.getMapCache(sessionKeyPrefix);
+        sessionCache.remove(session.getId().toString());
     }
 
     @Override
     public Collection<Session> getActiveSessions() {
-        Set<String> keys = redisTemplate.keys(this.sessionKeyPrefix + "*");
+        RMapCache<Serializable, Session> sessionCache = redisson.getMapCache(sessionKeyPrefix);
+        Set<Serializable> keys = sessionCache.keySet();
         Set<Session> sessions = new HashSet<Session>();
-        for (String key : keys) {
-            Session session = redisTemplate.opsForValue().get(key);
+        for (Serializable key : keys) {
+            Session session = sessionCache.get(key);
             sessions.add(session);
         }
         return sessions;
@@ -74,8 +77,8 @@ public class ShiroRedisSessionDao extends AbstractSessionDAO {
             logger.info("session or sessionId is null");
             return null;
         }
-        Session session = redisTemplate.opsForValue().get(this.sessionKeyPrefix + sessionId);
-        return session;
+        RMapCache<Serializable, Session> sessionCache = redisson.getMapCache(sessionKeyPrefix);
+        return sessionCache.get(sessionId.toString());
     }
 
     /**

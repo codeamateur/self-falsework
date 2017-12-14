@@ -9,6 +9,8 @@ import com.tianqian.self.service.user.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/user")
@@ -28,6 +31,8 @@ public class SysUserController {
     private SysUserService sysUserService;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private RedissonClient redisson;
 
     /**
      * 新增用户
@@ -93,6 +98,25 @@ public class SysUserController {
         return new BaseResult<SysUser>(sysUserService.getPageByCriteria(dto));
     }
 
+
+    /**
+     * 测试分布式锁
+     * @return
+     */
+    @ApiOperation(value = "测试分布式锁")
+    @GetMapping("/testLock")
+    public BaseResult<String> testLock(){
+        RLock lock = redisson.getFairLock("anyLock");
+        try {
+            lock.tryLock(3, 60, TimeUnit.SECONDS);
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }finally {
+            lock.unlock();
+        }
+        return new BaseResult<String>();
+    }
 
 
 

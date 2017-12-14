@@ -7,12 +7,9 @@ package com.tianqian.self.config.redis;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
 import org.apache.shiro.cache.CacheManager;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.util.Destroyable;
-import org.springframework.data.redis.core.RedisTemplate;
-
-import javax.annotation.Resource;
-import java.util.Set;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ShiroRedisCacheManager implements CacheManager, Destroyable {
 
@@ -20,22 +17,23 @@ public class ShiroRedisCacheManager implements CacheManager, Destroyable {
      * redis cache key的前缀
      */
     private String cacheKeyPrefix;
+    /**
+     * 过期时间
+     */
+    private long expire = 1800000L;
 
-    @Resource
-    private RedisTemplate<String, Session> redisTemplate;
+    @Autowired
+    private RedissonClient redisson;
+
 
     @Override
     public void destroy() throws Exception {
-        // 这里不用connection.flushDb(), 以免Session等其他缓存数据被连带删除
-        Set<String> redisKeys = redisTemplate.keys(this.cacheKeyPrefix + "*");
-        for (String redisKey : redisKeys) {
-            redisTemplate.delete(redisKey);
-        }
+        redisson.getMapCache(cacheKeyPrefix).clear();
     }
 
     @Override
     public <K, V> Cache<K, V> getCache(String name) throws CacheException {
-        return new ShiroRedisCache<K, V>(this.cacheKeyPrefix + name);
+        return new ShiroRedisCache<K, V>(redisson.getMapCache(cacheKeyPrefix),expire);
     }
 
     /**
@@ -45,5 +43,13 @@ public class ShiroRedisCacheManager implements CacheManager, Destroyable {
      */
     public void setCacheKeyPrefix(String cacheKeyPrefix) {
         this.cacheKeyPrefix = cacheKeyPrefix;
+    }
+
+    /**
+     * 配置过期时间
+     * @param expire
+     */
+    public void setExpire(long expire) {
+        this.expire = expire;
     }
 }

@@ -9,12 +9,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RMapCache;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -36,9 +36,11 @@ public class ResubmitValidationAspect {
     private static final Logger logger = LoggerFactory.getLogger(ResubmitValidationAspect.class);
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedissonClient redisson;
 
     private ThreadLocal<Boolean> booleanThreadLocal = new ThreadLocal<>();
+
+    private final String redissonKey = "ResubmitValidation";
 
     @Pointcut("execution(public * com.tianqian.self.controller..*.*(..))")
     public void resubmitValidation(){}
@@ -61,14 +63,12 @@ public class ResubmitValidationAspect {
         if(RequestMethod.POST.toString().equalsIgnoreCase(request.getMethod())){
             booleanThreadLocal.set(true);
             // 将入参作为key自增值存入redis
-            ValueOperations<String, Object> value = redisTemplate.opsForValue();
-            Long result = value.increment(params, 1);
-            // 判断返回值是否大于1，如果是则重复提交
-            if(result > 1) {
+            RMapCache<String, Integer> map = redisson.getMapCache(redissonKey);
+            //判断重复提交
+            if(map.containsKey(params)){
                 throw new BusinessException(BaseCodeEnum.RESUBMIT.getMessage(),BaseCodeEnum.RESUBMIT.getIndex());
             }
-            // 设置过期时间5秒
-            redisTemplate.expire(params, 5, TimeUnit.SECONDS);
+            map.put(params,1,5,TimeUnit.SECONDS);
         }else{
             booleanThreadLocal.set(false);
         }
@@ -80,7 +80,8 @@ public class ResubmitValidationAspect {
         String params = JSON.toJSONString(Arrays.toString(args));
         if(booleanThreadLocal.get()) {
             // 清除redis中key为入参的数据
-            redisTemplate.delete(params);
+            RMapCache<String, Integer> map = redisson.getMapCache(redissonKey);
+            map.remove(params);
         }
     }
 

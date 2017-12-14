@@ -5,7 +5,6 @@ import com.tianqian.self.common.base.BaseCodeEnum;
 import com.tianqian.self.common.base.BaseResult;
 import com.tianqian.self.common.base.BusinessException;
 import com.tianqian.self.common.utils.SecurityUtil;
-import com.tianqian.self.config.distributedlock.RedisDistributedLockHelper;
 import com.tianqian.self.config.properties.MessageSourceHelper;
 import com.tianqian.self.model.dto.user.LoginDto;
 import com.tianqian.self.model.entity.user.SysUser;
@@ -17,6 +16,8 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class AccountController {
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
 	@Autowired
-	private RedisDistributedLockHelper distributedLockHelper;
+	private RedissonClient redisson;
 
 	@ApiIgnore
 	@GetMapping(value = "/login")
@@ -50,7 +51,8 @@ public class AccountController {
 	@PostMapping(value = "/login")
 	public BaseResult<SysUser> login(@RequestBody LoginDto dto, HttpServletRequest req){
 		String key = "login_" + dto.getLoginId();
-		if (distributedLockHelper.tryLock(key)) {
+		RLock lock = redisson.getFairLock(key);
+		if (lock.tryLock()) {
 			try {
 				BaseResult<SysUser> result = new BaseResult<SysUser>();
 				String error = null;
@@ -81,7 +83,7 @@ public class AccountController {
 				}
 				return result;
 			} finally {
-				distributedLockHelper.unLock(key);
+				lock.unlock();
 			}
 		} else {
 			throw new BusinessException(MessageSourceHelper.getMessage("系统繁忙"));
