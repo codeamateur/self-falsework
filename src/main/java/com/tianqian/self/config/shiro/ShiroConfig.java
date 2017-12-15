@@ -121,6 +121,7 @@ public class ShiroConfig {
     }
 
     @Bean("sessionDao")
+    @DependsOn("redisTemplate")
     public ShiroRedisSessionDao sessionDao(){
         ShiroRedisSessionDao sessionDao = new ShiroRedisSessionDao();
         sessionDao.setSessionKeyPrefix("web_session:");
@@ -129,9 +130,11 @@ public class ShiroConfig {
     }
 
     @Bean("cacheManager")
+    @DependsOn("redisTemplate")
     public ShiroRedisCacheManager cacheManager(){
         ShiroRedisCacheManager cacheManager = new ShiroRedisCacheManager();
         cacheManager.setCacheKeyPrefix("web_cache:");
+        cacheManager.setExpire(1800000L);
         return cacheManager;
     }
 

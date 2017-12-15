@@ -7,12 +7,13 @@ package com.tianqian.self.config.redis;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
 import org.apache.shiro.cache.CacheManager;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.util.Destroyable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import javax.annotation.Resource;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class ShiroRedisCacheManager implements CacheManager, Destroyable {
 
@@ -20,13 +21,18 @@ public class ShiroRedisCacheManager implements CacheManager, Destroyable {
      * redis cache key的前缀
      */
     private String cacheKeyPrefix;
+    /**
+     * doGetAuthorizationInfo 的过期时间,默认30分钟。
+     */
+    private long expire = 1800000L;
 
-    @Resource
-    private RedisTemplate<String, Session> redisTemplate;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<String, Cache>();
 
     @Override
     public void destroy() throws Exception {
-        // 这里不用connection.flushDb(), 以免Session等其他缓存数据被连带删除
         Set<String> redisKeys = redisTemplate.keys(this.cacheKeyPrefix + "*");
         for (String redisKey : redisKeys) {
             redisTemplate.delete(redisKey);
@@ -35,15 +41,19 @@ public class ShiroRedisCacheManager implements CacheManager, Destroyable {
 
     @Override
     public <K, V> Cache<K, V> getCache(String name) throws CacheException {
-        return new ShiroRedisCache<K, V>(this.cacheKeyPrefix + name);
+        Cache c = caches.get(name);
+        if(c == null){
+           c = new ShiroRedisCache<K,V>(redisTemplate,cacheKeyPrefix,expire);
+           caches.put(name, c);
+        }
+        return c;
     }
 
-    /**
-     * 需要spring注入，所以public访问权限
-     * 
-     * @param cacheKeyPrefix
-     */
     public void setCacheKeyPrefix(String cacheKeyPrefix) {
         this.cacheKeyPrefix = cacheKeyPrefix;
+    }
+
+    public void setExpire(long expire) {
+        this.expire = expire;
     }
 }

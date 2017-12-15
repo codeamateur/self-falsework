@@ -1,11 +1,14 @@
 package com.tianqian.self.config.schedule;
 
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import java.util.Date;
+
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Component
+@EnableScheduling
 public class ScheduledTasks {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
