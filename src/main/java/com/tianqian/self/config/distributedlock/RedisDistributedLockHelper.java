@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 @Component
@@ -72,17 +74,19 @@ public class RedisDistributedLockHelper {
         return Boolean.FALSE;
     }
 
+    /**
+     * 保障原子性
+     * @param key
+     */
     public void unLock(String key){
-        redisTemplate.delete(lockKeyPrefix+key);
-
-/*        String unlockScript = "if (redis.call('get', KEYS[1]) == ARGV[1]) then "
+        String unlockScript = "if (redis.call('get', KEYS[1]) == ARGV[1]) then "
                 + "    return redis.call('del', KEYS[1]); "
                 + "else "
                 + "    return nil; "
                 + "end;";
-        Long result = (Long) redisTemplate.execute(new DefaultRedisScript<Long>(unlockScript, Long.class), Collections.singletonList(lockKeyPrefix+key), Collections.singletonList(key));
+        Long result = (Long) redisTemplate.execute(new DefaultRedisScript<>(unlockScript, Long.class), Collections.singletonList(lockKeyPrefix+key), key);
         if(result == null){
             logger.info("Fail to unlock for key:{},maybe lock is already expired",key);
-        }*/
+        }
     }
 }
