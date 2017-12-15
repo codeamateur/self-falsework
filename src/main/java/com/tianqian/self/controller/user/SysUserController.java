@@ -3,6 +3,7 @@ package com.tianqian.self.controller.user;
 import com.tianqian.self.common.base.BaseCodeEnum;
 import com.tianqian.self.common.base.BaseResult;
 import com.tianqian.self.common.utils.LocalBindingErrorUtil;
+import com.tianqian.self.config.distributedlock.RedissonLockHelper;
 import com.tianqian.self.model.dto.user.SysUserQueryDto;
 import com.tianqian.self.model.entity.user.SysUser;
 import com.tianqian.self.service.user.SysUserService;
@@ -17,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/user")
@@ -28,6 +30,8 @@ public class SysUserController {
     private SysUserService sysUserService;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    RedissonLockHelper redissonLockHelper;
 
     /**
      * 新增用户
@@ -58,7 +62,17 @@ public class SysUserController {
     @ApiImplicitParam(name = "userId", value = "用户主键", required = true, dataType = "int",paramType = "path")
     @GetMapping("/get/{userId}")
     public BaseResult<SysUser> selectByPrimaryKey(@Valid @PathVariable("userId") Integer userId){
-        return new BaseResult<SysUser>(sysUserService.selectByPrimaryKey(userId.longValue()));
+        boolean isLock = redissonLockHelper.tryLock("getUser",3,50, TimeUnit.SECONDS);
+        if(isLock){
+            try {
+                return new BaseResult<SysUser>(sysUserService.selectByPrimaryKey(userId.longValue()));
+            }finally {
+                redissonLockHelper.unlock("getUser");
+            }
+        }else{
+            return new BaseResult<SysUser>(sysUserService.selectByPrimaryKey(userId.longValue()));
+        }
+
     }
 
     /**
