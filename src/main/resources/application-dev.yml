@@ -2,7 +2,7 @@ server:
   port: 9080
 spring:
   redis:
-    host: localhost
+    host: 192.168.1.29
 #    host: 192.168.1.233
 #    password: 123456
     port: 6379
@@ -19,3 +19,7 @@ spring:
         allow: 192.168.1.29
   redisson:
     address: redis://localhost:6379
+  rocketmq:
+    name-server: 127.0.0.1:9876
+    producer:
+      group: zjx-test
